@@ -388,16 +388,60 @@ Tester l'API:
 ```bash
 curl http://localhost:3000/api/health
 curl http://localhost:3000/api/migration/status
+curl "http://localhost:3000/api/alerts/calculate?niveauEau=75&seuilEau=100"
 ```
 
-## 11. Prochaine etape
+## 11. Premiere route migree
 
-La prochaine etape conseillee est de migrer un premier module simple depuis Spring Boot vers Express.
+La premiere route migree depuis Spring Boot est:
 
-Le meilleur choix pour commencer est:
+```text
+GET /api/alerts/calculate?niveauEau=75&seuilEau=100
+```
+
+Elle vient de l'ancien controller Java:
 
 ```text
 GET /api/alerts/calculate
 ```
 
-Cette route ne depend presque pas de la base de donnees et permet d'apprendre tranquillement comment une route Express fonctionne.
+Cette route calcule le niveau d'alerte a partir de deux valeurs:
+
+- `niveauEau`: le niveau d'eau actuel;
+- `seuilEau`: le seuil critique.
+
+Exemple:
+
+```bash
+curl "http://localhost:3000/api/alerts/calculate?niveauEau=75&seuilEau=100"
+```
+
+Reponse:
+
+```json
+{
+  "niveauEau": 75,
+  "seuilEau": 100,
+  "alertLevel": "ATTENTION",
+  "alertLabel": "Attention",
+  "alertDescription": "Le niveau d'eau nécessite une surveillance",
+  "necessiteNotification": true,
+  "pourcentageSeuil": 75
+}
+```
+
+La logique est la meme que dans Java:
+
+- moins de 60% du seuil: `NORMAL`;
+- de 60% a moins de 85%: `ATTENTION`;
+- a partir de 85%: `DANGER`.
+
+Le code est separe en trois parties:
+
+- `src/routes/alertRoutes.js`: definit l'URL Express;
+- `src/controllers/alertController.js`: lit la requete et renvoie la reponse;
+- `src/services/alertService.js`: contient la logique de calcul.
+
+## 12. Prochaine etape
+
+La prochaine migration conseillee est une route meteo simple ou une route Supabase en lecture seule, par exemple les capteurs.
