@@ -555,9 +555,30 @@ npm run smoke
 
 Inventaire détaillé: `docs/API_INVENTORY.md`
 
-## 16. Prochaine etape (ops)
+## 16. Déploiement Vercel
 
-1. Pointer Flutter `baseUrl` vers Node.
-2. Vérifier auth mobile + SOS + quiz.
-3. Garder Python IA démarré (`PYTHON_AI_BASE_URL`).
-4. Éteindre progressivement Spring Boot.
+Le projet est prêt pour Vercel (Serverless Function Express) :
+
+- `api/index.js` — entrypoint
+- `vercel.json` — rewrite `/*` → `/api`, `maxDuration: 60`
+- Guide : `docs/VERCEL_DEPLOY.md`
+
+```bash
+npm i -g vercel
+vercel login
+vercel link
+# Configurer les env vars dans le dashboard Vercel (voir docs/VERCEL_DEPLOY.md)
+vercel --prod
+```
+
+**Important :** en production, `PYTHON_AI_BASE_URL` doit pointer vers le Flask déployé (pas `localhost`).
+
+Ensuite, pointer Flutter `AppConfig.baseUrl` vers `https://TON-PROJET.vercel.app`.
+
+## 17. Prochaine etape (ops)
+
+1. Déployer sur Vercel et configurer les secrets.
+2. Pointer Flutter `baseUrl` vers l’URL Vercel.
+3. Vérifier auth mobile + SOS + quiz.
+4. Déployer Python IA et renseigner `PYTHON_AI_BASE_URL`.
+5. Éteindre progressivement Spring Boot.

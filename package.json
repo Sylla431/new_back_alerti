@@ -2,10 +2,15 @@
   "name": "new-back-alerti",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node ./bin/www",
-    "check": "node --check app.js && node --check ./bin/www",
-    "smoke": "node ./scripts/cutover-smoke.js"
+    "check": "node --check app.js && node --check ./bin/www && node --check ./api/index.js",
+    "smoke": "node ./scripts/cutover-smoke.js",
+    "vercel:dev": "vercel dev",
+    "vercel:deploy": "vercel --prod"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.0",

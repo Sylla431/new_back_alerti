@@ -1,6 +1,7 @@
 var dotenv = require('dotenv');
 
-dotenv.config();
+// Sur Vercel, les variables viennent du dashboard — .env local est optionnel
+dotenv.config({ quiet: true });
 
 function getBoolean(value, defaultValue) {
   if (value === undefined || value === null || value === '') {
@@ -14,7 +15,7 @@ var nodeEnv = process.env.NODE_ENV || 'development';
 
 module.exports = {
   nodeEnv: nodeEnv,
-  isProduction: nodeEnv === 'production',
+  isProduction: nodeEnv === 'production' || Boolean(process.env.VERCEL),
   port: process.env.PORT || '3000',
   corsOrigin: process.env.CORS_ORIGIN || '*',
   corsCredentials: getBoolean(process.env.CORS_CREDENTIALS, false),
@@ -26,6 +27,7 @@ module.exports = {
     '',
   jwtSecret: process.env.JWT_SECRET || '',
   openWeatherMapApiKey: process.env.OPENWEATHERMAP_API_KEY || '',
+  // En production, pointer vers l'API Python déployée (pas localhost)
   pythonAiBaseUrl: process.env.PYTHON_AI_BASE_URL || 'http://localhost:5000',
   firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
   firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',

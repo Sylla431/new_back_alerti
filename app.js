@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 var cookieParser = require('cookie-parser');
 var cors = require('cors');
 var express = require('express');
@@ -15,6 +13,9 @@ var notFound = require('./src/middlewares/notFound');
 
 var app = express();
 
+// Requis derrière le reverse-proxy Vercel
+app.set('trust proxy', 1);
+
 app.use(logger(env.isProduction ? 'combined' : 'dev'));
 app.use(cors({
   origin: env.corsOrigin,
@@ -29,6 +30,7 @@ app.get('/', function(req, res) {
     success: true,
     name: 'new-back-alerti',
     message: 'Alerti Node.js API — migration progressive',
+    runtime: process.env.VERCEL ? 'vercel' : 'node',
     endpoints: {
       health: '/api/health',
       migrationStatus: '/api/migration/status',
