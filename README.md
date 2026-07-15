@@ -389,6 +389,8 @@ Tester l'API:
 curl http://localhost:3000/api/health
 curl http://localhost:3000/api/migration/status
 curl "http://localhost:3000/api/alerts/calculate?niveauEau=75&seuilEau=100"
+curl "http://localhost:3000/api/weather/current/bamako"
+curl "http://localhost:3000/api/conseils/type/prevention"
 ```
 
 ## 11. Premiere route migree
@@ -442,6 +444,120 @@ Le code est separe en trois parties:
 - `src/controllers/alertController.js`: lit la requete et renvoie la reponse;
 - `src/services/alertService.js`: contient la logique de calcul.
 
-## 12. Prochaine etape
+## 12. Routes meteo migrees
 
-La prochaine migration conseillee est une route meteo simple ou une route Supabase en lecture seule, par exemple les capteurs.
+Le module meteo est migre pour les localites (sans besoin de Supabase):
+
+```text
+GET /api/weather/current/:localite
+GET /api/weather/forecast/:localite?days=3
+GET /api/weather/alert-test/:localite?seuil=25.95
+GET /api/weather/debug/:localite
+```
+
+Exemple:
+
+```bash
+curl "http://localhost:3000/api/weather/current/bamako"
+```
+
+Configure la cle dans `.env`:
+
+```env
+OPENWEATHERMAP_API_KEY=ta_cle_openweathermap
+```
+
+Sans cette cle, la route renvoie une erreur claire:
+
+```json
+{
+  "success": false,
+  "error": "OPENWEATHERMAP_API_KEY non configurée"
+}
+```
+
+Fichiers:
+
+- `src/services/weatherService.js`
+- `src/controllers/weatherController.js`
+- `src/routes/weatherRoutes.js`
+
+Note: Node utilise OpenWeatherMap API 2.5 (gratuite). Les routes liees aux capteurs (`/sensor/:id`, `/forecast-sensor/:id`) restent encore cote Spring pour le moment.
+
+## 13. Routes conseils migrees
+
+```text
+GET /api/conseils/type/:type
+POST /api/conseils/add_conseil
+```
+
+Ces routes utilisent Supabase (table `conseil`).
+
+Configure dans `.env`:
+
+```env
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=ta_cle
+```
+
+Exemple lecture:
+
+```bash
+curl "http://localhost:3000/api/conseils/type/prevention"
+```
+
+## 14. Routes quiz migrees
+
+Routes mobiles (utilisees par Flutter):
+
+```text
+GET /quiz/full-quiz-data
+GET /quiz/questions-by-quiz?quizId=1
+```
+
+Routes admin:
+
+```text
+POST /api/quiz/add-quiz
+POST /api/quiz/:quizId/add-question
+```
+
+Exemples:
+
+```bash
+curl "http://localhost:3000/quiz/full-quiz-data"
+curl "http://localhost:3000/quiz/questions-by-quiz?quizId=1"
+```
+
+Fichiers:
+
+- `src/services/quizService.js`
+- `src/controllers/quizController.js`
+- `src/routes/quizRoutes.js`
+- `src/routes/mobileQuizRoutes.js`
+
+## 15. Modules data / auth / IA
+
+Modules migrés ensuite:
+
+- Sensors: `GET /api/sensors`, `POST /api/sensors/adddispo`, history, `GET /sensors/:id`
+- SOS: `POST /api/sos/signal(-anonyme)`, `GET /api/sos/signaux`, stats, types
+- Notifications: `GET /api/notifications/test-push`, `POST /api/notifications/send`
+- Auth: `/auth/register`, `/auth/login`, `/auth/mobile/*`
+- Proxy IA Flask: `/api/predict`, `/api/bamako/predict`, `/api/countries`, etc.
+
+Test de bascule:
+
+```bash
+npm start
+npm run smoke
+```
+
+Inventaire détaillé: `docs/API_INVENTORY.md`
+
+## 16. Prochaine etape (ops)
+
+1. Pointer Flutter `baseUrl` vers Node.
+2. Vérifier auth mobile + SOS + quiz.
+3. Garder Python IA démarré (`PYTHON_AI_BASE_URL`).
+4. Éteindre progressivement Spring Boot.

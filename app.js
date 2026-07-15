@@ -7,6 +7,9 @@ var logger = require('morgan');
 
 var env = require('./src/config/env');
 var apiRouter = require('./src/routes');
+var authRoutes = require('./src/routes/authRoutes');
+var mobileQuizRoutes = require('./src/routes/mobileQuizRoutes');
+var legacySensorRoutes = require('./src/routes/legacySensorRoutes');
 var errorHandler = require('./src/middlewares/errorHandler');
 var notFound = require('./src/middlewares/notFound');
 
@@ -25,15 +28,24 @@ app.get('/', function(req, res) {
   res.json({
     success: true,
     name: 'new-back-alerti',
-    message: 'Alerti Node.js API',
+    message: 'Alerti Node.js API — migration progressive',
     endpoints: {
       health: '/api/health',
-      migrationStatus: '/api/migration/status'
+      migrationStatus: '/api/migration/status',
+      authMobile: '/auth/mobile/login',
+      sos: '/api/sos/signaux',
+      sensors: '/api/sensors',
+      quizMobile: '/quiz/full-quiz-data',
+      aiPredict: '/api/predict',
+      aiProxyHealth: '/api/ai/health'
     }
   });
 });
 
+app.use('/auth', authRoutes);
 app.use('/api', apiRouter);
+app.use('/quiz', mobileQuizRoutes);
+app.use('/sensors', legacySensorRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -29,5 +29,7 @@ module.exports = {
   pythonAiBaseUrl: process.env.PYTHON_AI_BASE_URL || 'http://localhost:5000',
   firebaseProjectId: process.env.FIREBASE_PROJECT_ID || '',
   firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
-  firebasePrivateKey: process.env.FIREBASE_PRIVATE_KEY || ''
+  firebasePrivateKey: process.env.FIREBASE_PRIVATE_KEY || '',
+  fcmGatewayUrl: process.env.FCM_GATEWAY_URL || process.env.AWS_API_GATEWAY_URL || '',
+  fcmGatewayApiKey: process.env.FCM_GATEWAY_API_KEY || process.env.AWS_LAMBDA_API_KEY || ''
 };

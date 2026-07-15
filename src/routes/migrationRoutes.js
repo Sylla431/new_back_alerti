@@ -6,18 +6,25 @@ router.get('/status', function(req, res) {
   res.json({
     success: true,
     strategy: 'progressive',
-    currentBackend: 'Express API foundation ready',
-    legacyBackends: {
-      springBoot: 'Back_end-Alert-I',
-      pythonAi: 'alerti'
-    },
-    nextModules: [
-      'weather',
-      'alerts',
+    currentBackend: 'Express API — modules applicatifs migrés',
+    migratedModules: [
+      'alerts/calculate',
+      'weather (localite)',
+      'conseils',
+      'quiz',
       'sensors',
       'sos',
-      'auth',
-      'ai-proxy'
+      'notifications',
+      'auth (email + mobile JWT)',
+      'ai-proxy (Flask)'
+    ],
+    legacyBackends: {
+      springBoot: 'Back_end-Alert-I (à débrancher progressivement)',
+      pythonAi: 'alerti (exposé via proxy Node)'
+    },
+    nextModules: [
+      'cutover Flutter base URL',
+      'désactiver endpoints Spring dupliqués'
     ]
   });
 });
